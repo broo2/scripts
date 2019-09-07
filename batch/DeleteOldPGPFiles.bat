@@ -1,0 +1,1 @@
+forfiles.exe /p "C:\Program Files\Main Street Softworks\Monetra\GlobalPayments\" /m *.pgp /d -10 /c "cmd /c del /q @path"

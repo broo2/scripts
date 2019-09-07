@@ -1,0 +1,10 @@
+<AMTASK>
+<AMTASKHEAD>
+    <TASKINFO TASKVERSION="8090" />
+</AMTASKHEAD>
+
+<AMFUNCTION NAME="Main" RETURNTYPE="variable">
+<AMSENDEMAIL FROM="notify@cashnet.com" TO="michael.chambers@blackboard.com" SUBJECT="Test email from EFT Prod">Test email from EFT Prod</AMSENDEMAIL>
+</AMFUNCTION>
+
+</AMTASK>

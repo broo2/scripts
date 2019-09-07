@@ -1,0 +1,27 @@
+<AMTASK>
+<AMTASKHEAD>
+    <TASKINFO TASKVERSION="8090" />
+</AMTASKHEAD>
+
+<AMFUNCTION NAME="Main" RETURNTYPE="variable">
+<AMVARIABLE NAME="DIRECTORY"></AMVARIABLE>
+<AMVARIABLE NAME="SUBDIR"></AMVARIABLE>
+<AMLOOP TYPE="FOLDER" FOLDER="\\fileshare\cashnet_file01_pub\Usr\*_sp|*train|*prod|*prod2" RESULTVARIABLE="DIRECTORY" FOLDERS="YES" FILES="NO">
+     <!-- Delete files older than 10 days -->
+     <AMFILEDELETE SOURCE="%DIRECTORY%\*.*" SUBFOLDERS="YES" ISOLDERTHAN="%DateAdd( &quot;d&quot;, -10, CStr( Now() ))%" AM_ERRORS="27004" AM_ERROREXCLUDE="YES" />
+     <AMLOOP TYPE="FOLDER" FOLDER="%DIRECTORY%" RESULTVARIABLE="SUBDIR" SUBFOLDERS="YES" FOLDERS="YES" FILES="NO">
+          <!-- Select Reports directories -->
+          <AMIF TEXT="%SUBDIR%" SUBSTRING="Reports">
+               <!-- Select sub-directories with 15+ digits in the name -->
+               <AMIF TEXT="%SUBDIR%" SUBSTRING="[0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9][0-9]" USERE="YES">
+                    <!-- Delete folder older than 10 days -->
+                    <AMIF EXPRESSION="%DateDiff(&quot;d&quot;, FileDateTime(SUBDIR), Date())% &gt; 10">
+                         <AMREMOVEFOLDER FOLDER="%SUBDIR%" />
+                    </AMIF>
+               </AMIF>
+          </AMIF>
+     </AMLOOP>
+</AMLOOP>
+</AMFUNCTION>
+
+</AMTASK>

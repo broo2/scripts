@@ -1,0 +1,28 @@
+<AMTASK>
+<AMTASKHEAD>
+    <TASKINFO TASKVERSION="8090" />
+</AMTASKHEAD>
+
+<AMFUNCTION NAME="Main" RETURNTYPE="variable">
+<!-- Check for EFT server to verify it is active site (i.e. not BCP) before Events. -->
+<!-- Uses nslookup to find IP of live EFT site and compares against local file; if not equal, workflow will abort. -->
+<AMVARIABLE NAME="return_info"></AMVARIABLE>
+<AMVARIABLE NAME="this_server"></AMVARIABLE>
+<!-- nslookup against live IP and store it in EFT_IP variable -->
+<AMRUN FILE="cmd.exe /C nslookup eft.cashnet.com" WINDOWSTARTUP="hidden" WAITFOREND="YES" DOS="YES" OUTPUTVARIABLE="return_info" />
+<AMVARIABLE NAME="EFT_IP">%StrReverse(Split(StrReverse(return_info),)(0))%</AMVARIABLE>
+<AMTEXTREMOVE REMOVE="returns" TEXT="%EFT_IP%" RESULTVARIABLE="EFT_IP" />
+<!-- IP address of this server is store in c:\programdata\globalscape\this_server.txt; this file is not included in EFT backups or replication. -->
+<AMFILEREAD FILE="C:\ProgramData\GlobalScape\this_site.txt" RESULTVARIABLE="this_server" />
+<!-- Compare the EFT_IP variable (from nsloolup) with the this_server variable (from file) -->
+<AMIF EXPRESSION="%EFT_IP% &lt;&gt; %this_server%">
+     <!-- If IPs do not match, write event to log and stop processing; this is NOT the active EFT site. -->
+     <AMFILEWRITE FILE="C:\Logs\eft_check.log">%EVENT_DATESTAMP% - %EVENT_TIMESTAMP% : Remainder of Event '%EVENT_EVENTNAME%' will not be processed; This EFT server is not the active site.
+</AMFILEWRITE>
+     <AMSTOPTASK />
+</AMIF>
+<!-- If IPs do match, write event to log return; this is the active EFT site. -->
+<AMFILEWRITE FILE="C:\Logs\eft_check.log">%EVENT_DATESTAMP% - %EVENT_TIMESTAMP% : Event '%EVENT_EVENTNAME%' is processing; This EFT server is the active site.  </AMFILEWRITE>
+</AMFUNCTION>
+
+</AMTASK>
